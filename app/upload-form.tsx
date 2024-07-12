@@ -20,8 +20,9 @@ import { Id } from "@/convex/_generated/dataModel"
 
 
 const formSchema = z.object({
-    title: z.string().min(1).max(250),
-    file: z.custom<File>((val) => val instanceof File, "Required")
+    title: z.string().min(1).max(25),
+    file: z.custom<File>((val) => val instanceof File, "Required"),
+    description: z.string().min(1).max(250),
 })
 
 
@@ -55,6 +56,7 @@ export default function UploadForm({
 
         await createDocument({
             title: values.title,
+            description: values.description,
             fileId: storageId as Id<"_storage">,
         })
         onUpload();
@@ -79,13 +81,27 @@ export default function UploadForm({
 
                 <FormField
                     control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                                <Input placeholder="It is an expense Report" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
                     name="file"
                     render={({ field: { value, onChange, ...fieldProps } }) => (
                         <FormItem>
                             <FormLabel>File</FormLabel>
                             <FormControl>
                                 <Input
-                                    accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"
+                                    accept=".txt,.pdf,.doc,.csv"
                                     {...fieldProps}
                                     type="file"
                                     onChange={(event) => {
@@ -98,6 +114,8 @@ export default function UploadForm({
                         </FormItem>
                     )}
                 />
+
+
 
                 <LoadingButtton isLoading={form.formState.isSubmitting}
                     loadingText="Uploading...">

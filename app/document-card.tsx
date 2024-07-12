@@ -16,10 +16,9 @@ export function DocumentCard({ document }: { document: Doc<'documents'> }) {
         <Card>
             <CardHeader>
                 <CardTitle>{document.title}</CardTitle>
-                <CardDescription>Card Description</CardDescription>
             </CardHeader>
             <CardContent>
-                <p>Card Content</p>
+                <p>{document.description}</p>
             </CardContent>
             <CardFooter>
                 <Button asChild variant="secondary" className="flex items-center gap-2">

@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values"
-import { mutation, query } from "./_generated/server"
+import { action, mutation, query } from "./_generated/server"
+import { api } from './_generated/api'
 
 export const generateUploadUrl = mutation(async (ctx) => {
     return await ctx.storage.generateUploadUrl();
@@ -11,7 +12,7 @@ export const getDocuments = query({
         const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier
 
         if (!userId) {
-            return [];
+            return undefined;
         }
         return await ctx.db.query('documents')
             .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier',
@@ -52,6 +53,7 @@ export const createDocument = mutation({
     args: {
         title: v.string(),
         fileId: v.id("_storage"),
+        description: v.string(),
     },
     async handler(ctx, args) {
 
@@ -63,8 +65,37 @@ export const createDocument = mutation({
         await ctx.db.insert('documents', {
             title: args.title,
             tokenIdentifier: userId,
+            description: args.description,
             fileId: args.fileId,
         })
     },
 })
 
+export const askQuestion = action({
+    args: {
+        question: v.string(),
+        documentId: v.id("documents"),
+    },
+    async handler(ctx, args) {
+
+        const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier
+
+        if (!userId) {
+            throw new ConvexError('no authenicated user')
+        }
+
+        const document = await ctx.runQuery(api.documents.getDocument, {
+            documentId: args.documentId,
+        });
+        if (!document) {
+            throw new ConvexError("Document not found");
+        }
+
+        const file = await ctx.storage.get(document.fileId);
+        if (!file) {
+            throw new ConvexError("Document not found");
+        }
+    },
+})
+
+//1 hr 40min 
