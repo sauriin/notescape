@@ -1,8 +1,10 @@
 'use client'
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
+import { DeleteDocumentButton } from "./delete-document-button";
 
 export default function DocumentPage({
     params,
@@ -15,22 +17,35 @@ export default function DocumentPage({
         documentId: params.documentId,
     });
 
-    if (!document) {
-        return <div>You don't have access to view this document</div>
-    }
 
     return (
         <main className="p-24 space-y-8">
 
-            <div className="flex justify-between items-center">
-                <h1 className="text-4xl font-bold">{document.title}</h1>
-            </div>
-            <div className="flex gap-12">
-
-                <div className="bg-gray-900 p-4 rounded-xl flex-1 h-[screen]">
-                    {document.documentUrl && <iframe className="h-screen w-full" src={document.documentUrl} />}
+            {!document &&
+                <div className="space-y-8">
+                    <div>
+                        <Skeleton className="h-[40px] w-[500px]" />
+                    </div>
+                    <div>
+                        <Skeleton className="h-[500px] " />
+                    </div>
                 </div>
-            </div>
+            }
+
+            {document && (
+                <>
+                    <div className="flex justify-between items-center">
+                        <h1 className="text-4xl font-bold">{document.title}</h1>
+                        <DeleteDocumentButton documentId={document._id} />
+                    </div>
+                    <div className="flex gap-12">
+
+                        <div className="bg-gray-900 p-4 rounded-xl flex-1 h-[screen]">
+                            {document.documentUrl && <iframe className="h-screen w-full" src={document.documentUrl} />}
+                        </div>
+                    </div>
+                </>
+            )}
         </main>
     );
 } 

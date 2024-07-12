@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values"
-import { action, mutation, query } from "./_generated/server"
+import { action, mutation, MutationCtx, query, QueryCtx } from "./_generated/server"
 import { api } from './_generated/api'
+import { Id } from "./_generated/dataModel";
 
 export const generateUploadUrl = mutation(async (ctx) => {
     return await ctx.storage.generateUploadUrl();
@@ -71,31 +72,38 @@ export const createDocument = mutation({
     },
 })
 
-export const askQuestion = action({
+export async function hasAccessToDocument(
+    ctx: MutationCtx | QueryCtx,
+    documentId: Id<"documents">
+) {
+    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+
+    if (!userId) {
+        return null;
+    }
+
+    const document = await ctx.db.get(documentId);
+
+    if (!document) {
+        return null;
+    }
+
+    return { document, userId };
+}
+
+
+
+
+export const deleteDocument = mutation({
     args: {
-        question: v.string(),
         documentId: v.id("documents"),
     },
     async handler(ctx, args) {
-
-        const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier
-
-        if (!userId) {
-            throw new ConvexError('no authenicated user')
+        const accessObj = await hasAccessToDocument(ctx, args.documentId);
+        if (!accessObj) {
+            throw new ConvexError("You do not have to access to this document");
         }
-
-        const document = await ctx.runQuery(api.documents.getDocument, {
-            documentId: args.documentId,
-        });
-        if (!document) {
-            throw new ConvexError("Document not found");
-        }
-
-        const file = await ctx.storage.get(document.fileId);
-        if (!file) {
-            throw new ConvexError("Document not found");
-        }
-    },
+        await ctx.storage.delete(accessObj.document.fileId);
+        await ctx.db.delete(args.documentId);
+    }
 })
-
-//1 hr 40min 
