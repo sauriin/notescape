@@ -9,10 +9,10 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import UploadForm from "./upload-form";
 import { useState } from "react";
 import { Upload } from "lucide-react";
 import { btnIconStyles, btnStyles } from "@/styles/styles";
+import UploadForm from "./upload-form";
 
 
 export default function UploadDocumentButton() {

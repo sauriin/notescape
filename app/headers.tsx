@@ -22,7 +22,7 @@ export function Header() {
                         NoteScape
                     </Link>
                     <nav>
-                        <Link href="/" className="hover:text-slate-300">Documents</Link>
+                        <Link href="/dashboard" className="hover:text-slate-300">Documents</Link>
                     </nav>
                 </div>
                 <div className="flex gap-4 items-center">

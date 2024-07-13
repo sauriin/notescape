@@ -7,6 +7,9 @@ export default defineSchema({
         description: v.string(),
         tokenIdentifier: v.string(),
         fileId: v.id("_storage"),
-    }).index('by_tokenIdentifier', ['tokenIdentifier'])
-
+    }).index('by_tokenIdentifier', ['tokenIdentifier']),
+    notes: defineTable({
+        text: v.string(),
+        tokenIdentifier: v.string(),
+    }).index('by_tokenIdentifier', ['tokenIdentifier']),
 });

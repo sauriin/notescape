@@ -92,8 +92,6 @@ export async function hasAccessToDocument(
 }
 
 
-
-
 export const deleteDocument = mutation({
     args: {
         documentId: v.id("documents"),

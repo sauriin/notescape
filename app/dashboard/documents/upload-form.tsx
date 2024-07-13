@@ -14,9 +14,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
-import LoadingButtton from "@/components/loading-button"
 import { mutation } from "@/convex/_generated/server"
 import { Id } from "@/convex/_generated/dataModel"
+import { LoadingButton } from "@/components/loading-button"
 
 
 const formSchema = z.object({
@@ -117,10 +117,10 @@ export default function UploadForm({
 
 
 
-                <LoadingButtton isLoading={form.formState.isSubmitting}
+                <LoadingButton isLoading={form.formState.isSubmitting}
                     loadingText="Uploading...">
                     Upload
-                </LoadingButtton>
+                </LoadingButton>
             </form>
         </Form>
     )

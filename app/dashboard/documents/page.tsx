@@ -8,13 +8,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 
-export default function Home() {
+export default function LandingPage() {
 
   const documents = useQuery(api.documents.getDocuments)
 
   return (
-    <main className="p-24 space-y-8">
-
+    <main className="w-full space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">My Documents</h1>
         <AddDocumentButton />
@@ -51,7 +50,6 @@ export default function Home() {
           {documents?.map((doc) => <DocumentCard document={doc} />)}
         </div>
       )}
-
     </main>
   );
 }
