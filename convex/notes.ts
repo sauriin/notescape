@@ -14,7 +14,7 @@ export const getNote = query({
 
         const note = await ctx.db.get(args.noteId)
 
-        if(!note){
+        if (!note) {
             return null
         }
 
@@ -52,7 +52,6 @@ export const createNote = mutation({
 
         if (!userId) {
             throw new ConvexError("You must be logged in to create a note");
-            return undefined;
         }
 
         const note = await ctx.db.insert('notes', {
@@ -60,5 +59,30 @@ export const createNote = mutation({
             tokenIdentifier: userId,
         });
         return note;
+    },
+})
+
+export const deleteNote = mutation({
+    args: {
+        noteId: v.id("notes"),
+    },
+    async handler(ctx, args) {
+        const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier
+
+        if (!userId) {
+            throw new ConvexError("You must be logged in to create a note");
+            return undefined;
+        }
+
+        const note = await ctx.db.get(args.noteId);
+
+        if (!note) {
+            throw new ConvexError("Note not found");
+        }
+
+        if (note.tokenIdentifier !== userId) {
+            throw new ConvexError("You do not have permission to delete this note");
+        }
+        await ctx.db.delete(args.noteId);
     },
 })

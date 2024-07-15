@@ -1,5 +1,5 @@
 export default function NotesPage() {
     return (
-        <div>Please select a note</div>
+        <div className="text-2xl font-bold">Please select a note</div>
     );
 }

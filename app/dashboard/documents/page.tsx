@@ -37,8 +37,8 @@ export default function LandingPage() {
         <div className="py-12 flex justify-center flex-col items-center gap-8">
           <Image
             src="/upload.svg"
-            height="200"
-            width="200"
+            height="450"
+            width="450"
             alt="Upload Document Img" />
           <h2 className="text-2xl">You have no documents</h2>
           <AddDocumentButton />
