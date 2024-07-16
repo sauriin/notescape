@@ -34,9 +34,8 @@ export default function DocumentPage({
 
             {document && (
                 <>
-                    <div className="flex justify-between items-center"> 
+                    <div className="flex justify-between items-center">
                         <h1 className="text-4xl font-bold">{document.title}</h1>
-
                         <DeleteDocumentButton documentId={document._id} />
                     </div>
                 </>

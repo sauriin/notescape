@@ -1,13 +1,15 @@
-'use client'
+"use client";
 
-import { ThemeProvider } from "@/components/theme-providers";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
-import React from "react";
+import { dark } from "@clerk/themes";
+import { useTheme } from "next-themes";
+import { ThemeProvider } from "@/components/theme-providers";
 
-
-const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL as string);
+const convex = new ConvexReactClient(
+    process.env.NEXT_PUBLIC_CONVEX_URL as string
+);
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
@@ -17,11 +19,24 @@ export function Providers({ children }: { children: React.ReactNode }) {
             enableSystem
             disableTransitionOnChange
         >
-            <ClerkProvider publishableKey={process.env.NEXT_CLERK_PUBLISHABLE_KEY}>
-                <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-                    {children}
-                </ConvexProviderWithClerk>
-            </ClerkProvider>
+            <OtherProviders>{children}</OtherProviders>
         </ThemeProvider>
-    )
+    );
+}
+
+function OtherProviders({ children }: { children: React.ReactNode }) {
+    const { resolvedTheme } = useTheme();
+
+    return (
+        <ClerkProvider
+            appearance={{
+                baseTheme: resolvedTheme === "dark" ? dark : undefined,
+            }}
+            publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        >
+            <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+                {children}
+            </ConvexProviderWithClerk>
+        </ClerkProvider>
+    );
 }

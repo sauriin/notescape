@@ -10,6 +10,7 @@ import { useParams } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useOrganization } from "@clerk/nextjs";
 
 export default function NotesLayout({
     children,
@@ -17,7 +18,10 @@ export default function NotesLayout({
     children: ReactNode,
     notes: ReactNode,
 }) {
-    const notes = useQuery(api.notes.getNotes);
+    const organization = useOrganization()
+    const notes = useQuery(api.notes.getNotes, {
+        orgId: organization.organization?.id,
+    });
     const { noteId } = useParams<{ noteId: Id<"notes"> }>();
 
     return (

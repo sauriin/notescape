@@ -15,6 +15,7 @@ import { useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { LoadingButton } from "@/components/loading-button"
 import { Textarea } from "@/components/ui/textarea"
+import { useOrganization } from "@clerk/nextjs"
 
 
 const formSchema = z.object({
@@ -28,7 +29,7 @@ export default function CreateNote({
     onNoteCreated: () => void
 }) {
     const createNote = useMutation(api.notes.createNote);
-
+    const organization = useOrganization()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -39,6 +40,7 @@ export default function CreateNote({
     async function onSubmit(values: z.infer<typeof formSchema>) {
         await createNote({
             text: values.text,
+            orgId: organization.organization?.id,
         });
         onNoteCreated();
     }

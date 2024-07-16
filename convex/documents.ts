@@ -7,47 +7,69 @@ export const generateUploadUrl = mutation(async (ctx) => {
     return await ctx.storage.generateUploadUrl();
 })
 
-export const getDocuments = query({
-    async handler(ctx) {
+export const hasOrgAccess = async (ctx: MutationCtx | QueryCtx, orgId: string) => {
+    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
 
-        const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier
+    if (!userId) {
+        return false;
+    }
+
+    const membership = await ctx.db
+        .query("memberships")
+        .withIndex("by_orgId_userId", (q) =>
+            q.eq("orgId", orgId).eq("userId", userId)
+        ).first()
+
+    return !membership;
+}
+
+export const getDocuments = query({
+    args: {
+        orgId: v.optional(v.string()),
+    },
+    async handler(ctx, args) {
+        const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
 
         if (!userId) {
             return undefined;
         }
-        return await ctx.db.query('documents')
-            .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier',
-                userId)).collect()
-    }
-})
+
+        if (args.orgId) {
+            const isMember = await hasOrgAccess(ctx, args.orgId)
+            if (!isMember) {
+                return undefined
+            }
+            return await ctx.db
+                .query("documents")
+                .withIndex("by_orgId", (q) => q.eq("orgId", args.orgId))
+                .collect();
+        } else {
+            return await ctx.db
+                .query("documents")
+                .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", userId))
+                .collect();
+        }
+    },
+});
+
 
 export const getDocument = query({
     args: {
-        documentId: v.id('documents'),
+        documentId: v.id("documents"),
     },
     async handler(ctx, args) {
+        const accessObj = await hasAccessToDocument(ctx, args.documentId);
 
-        const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier
-
-        if (!userId) {
+        if (!accessObj) {
             return null;
         }
 
-        const document = await ctx.db.get(args.documentId)
-
-        if (!document) {
-            return null;
-        }
-
-        if (document.tokenIdentifier !== userId) {
-            return null;
-        }
         return {
-            ...document,
-            documentUrl: await ctx.storage.getUrl(document.fileId)
+            ...accessObj.document,
+            documentUrl: await ctx.storage.getUrl(accessObj.document.fileId),
         };
-    }
-})
+    },
+});
 
 
 export const createDocument = mutation({
@@ -55,6 +77,7 @@ export const createDocument = mutation({
         title: v.string(),
         fileId: v.id("_storage"),
         description: v.string(),
+        orgId: v.optional(v.string())
     },
     async handler(ctx, args) {
 
@@ -63,12 +86,28 @@ export const createDocument = mutation({
         if (!userId) {
             throw new ConvexError('no authenicated user')
         }
-        await ctx.db.insert('documents', {
-            title: args.title,
-            tokenIdentifier: userId,
-            description: args.description,
-            fileId: args.fileId,
-        })
+
+        let documentId: Id<"documents">;
+
+        if (args.orgId) {
+            const isMember = await hasOrgAccess(ctx, args.orgId);
+            if (!isMember) {
+                throw new ConvexError("You don't have access to this Organization")
+            }
+            documentId = await ctx.db.insert('documents', {
+                title: args.title,
+                description: args.description,
+                fileId: args.fileId,
+                orgId: args.orgId,
+            });
+        } else {
+            documentId = await ctx.db.insert("documents", {
+                title: args.title,
+                tokenIdentifier: userId,
+                fileId: args.fileId,
+                description: args.description,
+            })
+        }
     },
 })
 
@@ -105,3 +144,4 @@ export const deleteDocument = mutation({
         await ctx.db.delete(args.documentId);
     }
 })
+

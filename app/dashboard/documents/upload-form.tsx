@@ -17,6 +17,7 @@ import { api } from "@/convex/_generated/api"
 import { mutation } from "@/convex/_generated/server"
 import { Id } from "@/convex/_generated/dataModel"
 import { LoadingButton } from "@/components/loading-button"
+import { useOrganization } from "@clerk/nextjs"
 
 
 const formSchema = z.object({
@@ -31,6 +32,7 @@ export default function UploadForm({
 }: {
     onUpload: () => void
 }) {
+    const organization = useOrganization();
     const createDocument = useMutation(api.documents.createDocument)
     const generateUploadUrl = useMutation(api.documents.generateUploadUrl)
 
@@ -58,6 +60,7 @@ export default function UploadForm({
             title: values.title,
             description: values.description,
             fileId: storageId as Id<"_storage">,
+            orgId: organization.organization?.id,
         })
         onUpload();
     }

@@ -3,20 +3,24 @@
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { DocumentCard } from "./document-card";
-import AddDocumentButton from "./upload-document-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
+import { useOrganization } from "@clerk/nextjs";
+import UploadDocumentButton from "./upload-document-button";
 
-export default function LandingPage() {
+export default function Home() {
+  const organization = useOrganization();
 
-  const documents = useQuery(api.documents.getDocuments)
+  const documents = useQuery(api.documents.getDocuments, {
+    orgId: organization.organization?.id,
+  })
 
   return (
     <main className="w-full space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">My Documents</h1>
-        <AddDocumentButton />
+        <UploadDocumentButton />
       </div>
 
       {!documents && (
@@ -41,7 +45,7 @@ export default function LandingPage() {
             width="450"
             alt="Upload Document Img" />
           <h2 className="text-2xl">You have no documents</h2>
-          <AddDocumentButton />
+          <UploadDocumentButton />
         </div>
       )}
 
@@ -52,4 +56,4 @@ export default function LandingPage() {
       )}
     </main>
   );
-}
+} 
