@@ -24,6 +24,4 @@ export default defineSchema({
     })
         .index('by_tokenIdentifier', ['tokenIdentifier'])
         .index("by_orgId", ["orgId"])
-});
-
-//4 hr 57 min 22 sec    
+});    

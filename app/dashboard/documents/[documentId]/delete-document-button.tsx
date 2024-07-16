@@ -60,7 +60,7 @@ export function DeleteDocumentButton(
                                 documentId,
                             })
                                 .then(() => {
-                                    router.push("/");
+                                    router.push("/dashboard");
                                 })
                                 .finally(() => {
                                     setIsLoading(false);

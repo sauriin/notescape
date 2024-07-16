@@ -36,7 +36,19 @@ export default function DocumentPage({
                 <>
                     <div className="flex justify-between items-center">
                         <h1 className="text-4xl font-bold">{document.title}</h1>
+
                         <DeleteDocumentButton documentId={document._id} />
+                    </div>
+
+                    <div className="flex gap-12">
+                        <div className="bg-gray-900 p-4 rounded-xl flex-1 h-[500px]">
+                            {document.documentUrl && (
+                                <iframe
+                                    className="w-full h-full"
+                                    src={document.documentUrl}
+                                />
+                            )}
+                        </div>
                     </div>
                 </>
             )}

@@ -1,5 +1,9 @@
-'use client'
+"use client";
 
+import { z } from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import {
     Form,
     FormControl,
@@ -7,53 +11,44 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { useMutation } from "convex/react"
-import { api } from "@/convex/_generated/api"
-import { mutation } from "@/convex/_generated/server"
-import { Id } from "@/convex/_generated/dataModel"
-import { LoadingButton } from "@/components/loading-button"
-import { useOrganization } from "@clerk/nextjs"
-
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { LoadingButton } from "@/components/loading-button";
+import { Id } from "@/convex/_generated/dataModel";
+import { useOrganization } from "@clerk/nextjs";
 
 const formSchema = z.object({
-    title: z.string().min(1).max(50),
+    title: z.string().min(1).max(250),
     file: z.custom<File>((val) => val instanceof File, "Required"),
     description: z.string().min(1).max(500),
-})
-
+});
 
 export default function UploadForm({
     onUpload,
 }: {
-    onUpload: () => void
+    onUpload: () => void;
 }) {
     const organization = useOrganization();
-    const createDocument = useMutation(api.documents.createDocument)
-    const generateUploadUrl = useMutation(api.documents.generateUploadUrl)
+    const createDocument = useMutation(api.documents.createDocument);
+    const generateUploadUrl = useMutation(api.documents.generateUploadUrl);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: "",
         },
-    })
+    });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-
         const url = await generateUploadUrl();
-        console.log(url)
 
         const result = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": values.file.type },
             body: values.file,
-        })
-
+        });
         const { storageId } = await result.json();
 
         await createDocument({
@@ -62,12 +57,13 @@ export default function UploadForm({
             fileId: storageId as Id<"_storage">,
             orgId: organization.organization?.id,
         })
+
         onUpload();
     }
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
                 <FormField
                     control={form.control}
                     name="title"
@@ -104,12 +100,12 @@ export default function UploadForm({
                             <FormLabel>File</FormLabel>
                             <FormControl>
                                 <Input
-                                    accept=".txt,.pdf,.doc,.csv"
                                     {...fieldProps}
                                     type="file"
+                                    accept=".txt,.xml,.doc"
                                     onChange={(event) => {
                                         const file = event.target.files?.[0];
-                                        onChange(file)
+                                        onChange(file);
                                     }}
                                 />
                             </FormControl>
@@ -118,13 +114,13 @@ export default function UploadForm({
                     )}
                 />
 
-
-
-                <LoadingButton isLoading={form.formState.isSubmitting}
-                    loadingText="Uploading...">
+                <LoadingButton
+                    isLoading={form.formState.isSubmitting}
+                    loadingText="Uploading..."
+                >
                     Upload
                 </LoadingButton>
             </form>
         </Form>
-    )
+    );
 }

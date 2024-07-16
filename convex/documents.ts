@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values"
-import { action, mutation, MutationCtx, query, QueryCtx } from "./_generated/server"
+import { action, internalQuery, mutation, MutationCtx, query, QueryCtx } from "./_generated/server"
 import { api } from './_generated/api'
 import { Id } from "./_generated/dataModel";
 
@@ -7,7 +7,10 @@ export const generateUploadUrl = mutation(async (ctx) => {
     return await ctx.storage.generateUploadUrl();
 })
 
-export const hasOrgAccess = async (ctx: MutationCtx | QueryCtx, orgId: string) => {
+export const hasOrgAccess = async (
+    ctx: MutationCtx | QueryCtx,
+    orgId: string
+) => {
     const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
 
     if (!userId) {
@@ -18,10 +21,11 @@ export const hasOrgAccess = async (ctx: MutationCtx | QueryCtx, orgId: string) =
         .query("memberships")
         .withIndex("by_orgId_userId", (q) =>
             q.eq("orgId", orgId).eq("userId", userId)
-        ).first()
+        )
+        .first();
 
-    return !membership;
-}
+    return !!membership;
+};
 
 export const getDocuments = query({
     args: {
@@ -35,10 +39,11 @@ export const getDocuments = query({
         }
 
         if (args.orgId) {
-            const isMember = await hasOrgAccess(ctx, args.orgId)
+            const isMember = await hasOrgAccess(ctx, args.orgId);
             if (!isMember) {
-                return undefined
+                return undefined;
             }
+
             return await ctx.db
                 .query("documents")
                 .withIndex("by_orgId", (q) => q.eq("orgId", args.orgId))
@@ -127,8 +132,29 @@ export async function hasAccessToDocument(
         return null;
     }
 
+    if (document.orgId) {
+        const hasAccess = await hasOrgAccess(ctx, document.orgId);
+
+        if (!hasAccess) {
+            return null;
+        }
+    } else {
+        if (document.tokenIdentifier !== userId) {
+            return null;
+        }
+    }
+
     return { document, userId };
 }
+
+export const hasAccessToDocumentQuery = internalQuery({
+    args: {
+        documentId: v.id("documents"),
+    },
+    async handler(ctx, args) {
+        return await hasAccessToDocument(ctx, args.documentId);
+    },
+});
 
 
 export const deleteDocument = mutation({

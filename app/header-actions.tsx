@@ -14,7 +14,7 @@ export function HeaderActions() {
                     <UserButton />
                 </div>
             </Authenticated>
-            <AuthLoading>
+            <AuthLoading>   
                 Loading...
             </AuthLoading>
         </>

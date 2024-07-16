@@ -1,7 +1,6 @@
-"use client"
+"use client";
 
 import { useQuery } from "convex/react";
-import UploadNoteButton from "./upload-note-button";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import { ReactNode } from "react";
@@ -11,14 +10,10 @@ import { Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization } from "@clerk/nextjs";
+import CreateNoteButton from "./upload-note-button";
 
-export default function NotesLayout({
-    children,
-}: {
-    children: ReactNode,
-    notes: ReactNode,
-}) {
-    const organization = useOrganization()
+export default function NotesLayout({ children }: { children: ReactNode }) {
+    const organization = useOrganization();
     const notes = useQuery(api.notes.getNotes, {
         orgId: organization.organization?.id,
     });
@@ -28,7 +23,7 @@ export default function NotesLayout({
         <main className="w-full space-y-8">
             <div className="flex justify-between items-center">
                 <h1 className="text-4xl font-bold">Notes</h1>
-                <UploadNoteButton />
+                <CreateNoteButton />
             </div>
 
             {!notes && (
@@ -48,39 +43,42 @@ export default function NotesLayout({
                 </div>
             )}
 
-            {notes?.length === 0 &&
+            {notes?.length === 0 && (
                 <div>
-                    <div className="py-12 flex justify-center flex-col items-center gap-8">
+                    <div className="py-12 flex flex-col justify-center items-center gap-8">
                         <Image
                             src="/upload.svg"
-                            height="450"
-                            width="450"
+                            height="400"
+                            width="400"
                             alt="Upload Document Img" />
                         <h2 className="text-2xl">You have no notes</h2>
                     </div>
                 </div>
-            }
+            )}
 
-            {notes && notes?.length > 0 && (
+            {notes && notes.length > 0 && (
                 <div className="flex gap-12">
-                    <ul className="space-y-2 w-[200px]"
-                    >
-                        {notes?.map((note) =>
-                            <li key={note._id} className={cn("text-base hover:text-blue-100", {
-                                "text-blue-300": note._id === noteId,
-                            })}>
-                                <Link
-                                    href={`/dashboard/notes/${note._id}`}
-                                >
-                                    {note.text.substring(0, 20) + "..."}
+                    <ul className="space-y-2 w-[300px]">
+                        {notes?.map((note) => (
+                            <li
+                                key={note._id}
+                                className={cn(
+                                    "text-base hover:text-cyan-300 dark:hover:text-cyan-100",
+                                    {
+                                        "text-cyan-300": note._id === noteId,
+                                    }
+                                )}
+                            >
+                                <Link href={`/dashboard/notes/${note._id}`}>
+                                    {note.text.substring(0, 24) + "..."}
                                 </Link>
-                            </li>)}
+                            </li>
+                        ))}
                     </ul>
-                    <div className="bg-slate-900 rounded p-4 w-full">
-                        {children}
-                    </div>
+
+                    <div className="dark:bg-slate-900 bg-slate-100 rounded p-4 w-full" >{children}</div>
                 </div>
             )}
-        </main >
+        </main>
     );
 }

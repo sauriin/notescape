@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
@@ -6,19 +6,28 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
-import { Doc } from "@/convex/_generated/dataModel"
-import { Eye, Upload } from "lucide-react"
-import Link from "next/link"
+} from "@/components/ui/card";
+import { Doc } from "@/convex/_generated/dataModel";
+import { Eye, Loader2 } from "lucide-react";
+import Link from "next/link";
 
-export function DocumentCard({ document }: { document: Doc<'documents'> }) {
+export function DocumentCard({ document }: { document: Doc<"documents"> }) {
     return (
         <Card>
             <CardHeader>
                 <CardTitle>{document.title}</CardTitle>
+                <CardDescription></CardDescription>
             </CardHeader>
             <CardContent>
-                <p>{document.description}</p>
+                <div>
+                    {!document.description ? (
+                        <div className="flex justify-center">
+                            <Loader2 className="animate-spin" />
+                        </div>
+                    ) : (
+                        document.description
+                    )}
+                </div>
             </CardContent>
             <CardFooter>
                 <Button asChild variant="secondary" className="flex items-center gap-2">
@@ -27,6 +36,6 @@ export function DocumentCard({ document }: { document: Doc<'documents'> }) {
                     </Link>
                 </Button>
             </CardFooter>
-        </Card >
-    )
+        </Card>
+    );
 }
