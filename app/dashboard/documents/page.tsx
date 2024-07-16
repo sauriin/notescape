@@ -45,7 +45,7 @@ export default function Home() {
             width="400"
             alt="Upload Document Img" />
 
-          <h2 className="text-2xl">You have no documents</h2>
+          <h2 className="text-2xl">Your workspace is empty, upload a document to get started!</h2>
         </div>
       )}
 

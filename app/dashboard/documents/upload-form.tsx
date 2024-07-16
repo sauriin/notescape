@@ -20,9 +20,9 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@clerk/nextjs";
 
 const formSchema = z.object({
-    title: z.string().min(1).max(250),
+    title: z.string().min(1).max(50),
     file: z.custom<File>((val) => val instanceof File, "Required"),
-    description: z.string().min(1).max(500),
+    description: z.string().min(1).max( 500),
 });
 
 export default function UploadForm({

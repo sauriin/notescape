@@ -28,7 +28,7 @@ export function Header() {
                         <OrganizationSwitcher />
 
                         <Authenticated>
-                            <Link href="/dashboard" className="hover:text-slate-400">
+                            <Link href="/dashboard" className="hover:text-cyan-500">
                                 Dashboard
                             </Link>
                         </Authenticated>

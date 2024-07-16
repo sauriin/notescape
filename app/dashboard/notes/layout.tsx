@@ -51,7 +51,7 @@ export default function NotesLayout({ children }: { children: ReactNode }) {
                             height="400"
                             width="400"
                             alt="Upload Document Img" />
-                        <h2 className="text-2xl">You have no notes</h2>
+                        <h2 className="text-2xl">Your workspace is empty, upload a note to get started!</h2>
                     </div>
                 </div>
             )}
