@@ -44,7 +44,7 @@ export default function DocumentPage({
                         <div className="bg-gray-900 p-4 rounded-xl flex-1 h-[500px]">
                             {document.documentUrl && (
                                 <iframe
-                                    className="w-full h-full"
+                                    className="w-full h-full dark:bg-slate-900 bg-slate-100"
                                     src={document.documentUrl}
                                 />
                             )}
