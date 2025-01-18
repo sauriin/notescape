@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 import { Header } from "./headers";
+import { Footer } from "./dashboard/footer";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Toaster />
+          <Footer />
         </Providers>
       </body>
     </html>

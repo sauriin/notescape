@@ -41,10 +41,10 @@ export default function DocumentPage({
                     </div>
 
                     <div className="flex gap-12">
-                        <div className="bg-gray-900 p-4 rounded-xl flex-1 h-[500px]">
+                        <div className="bg-gray-900 p-4 rounded-xl flex-1 h-[screen]">
                             {document.documentUrl && (
                                 <iframe
-                                    className="w-full h-full dark:bg-slate-900 bg-slate-100"
+                                    className="w-full h-screen dark:bg-slate-900 bg-slate-100"
                                     src={document.documentUrl}
                                 />
                             )}

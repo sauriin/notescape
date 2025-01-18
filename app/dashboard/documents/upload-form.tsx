@@ -22,7 +22,7 @@ import { useOrganization } from "@clerk/nextjs";
 const formSchema = z.object({
     title: z.string().min(1).max(50),
     file: z.custom<File>((val) => val instanceof File, "Required"),
-    description: z.string().min(1).max( 500),
+    description: z.string().min(1).max(500),
 });
 
 export default function UploadForm({
@@ -102,7 +102,7 @@ export default function UploadForm({
                                 <Input
                                     {...fieldProps}
                                     type="file"
-                                    accept=".txt,.xml,.doc"
+                                    accept=".txt,.xml,.docx,.png,.jpeg,.jpg"
                                     onChange={(event) => {
                                         const file = event.target.files?.[0];
                                         onChange(file);
