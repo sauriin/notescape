@@ -26,7 +26,6 @@ export function Header() {
 
                     <nav className="flex items-center gap-8">
                         <OrganizationSwitcher />
-
                         <Authenticated>
                             <Link href="/dashboard" className="hover:text-cyan-500">
                                 Dashboard
@@ -37,7 +36,6 @@ export function Header() {
 
                 <div className="flex gap-4 items-center">
                     <ModeToggle />
-
                     <HeaderActions />
                 </div>
             </div>
